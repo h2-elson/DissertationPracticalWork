@@ -4,7 +4,7 @@ import csv
 import os
 
 LOG_FILE = "access_control_log.txt"
-USER_FILE = "users.csv"  # Sample CSV with users: username,last_login,password_strength
+USER_FILE = "\\Users\\Harry\\DissertationPracticalWork\\test\\users.csv"
 
 # Password policy settings
 MIN_PASSWORD_LENGTH = 8

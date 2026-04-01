@@ -25,11 +25,11 @@ def check_windows_updates():
         return False
 
 def install_windows_updates():
-    #Install windows update (simulated)
+    #Install windows update
     try:
-        log_event("Simulating installation of updates")
+        log_event("Installing Updates")
         subprocess.run(["powershell", "-Command", "Install-WindowsUpdate -AcceptAll -IgnoreReboot"])
-        log_event("All updates applied succesfully (simulated).")
+        log_event("All updates applied succesfully.")
         return True
     except Exception as e:
         log_event(f"Error installing updates: {e}")

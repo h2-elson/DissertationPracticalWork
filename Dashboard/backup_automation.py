@@ -4,8 +4,8 @@ import shutil
 import datetime
 
 LOG_FILE = "backup_log.txt"
-SOURCE_FOLDER = "critical_files"
-BACKUP_FOLDER = "backup_location"
+SOURCE_FOLDER = "\\Users\\Harry\\DissertationPracticalWork\\test\\critical_files"
+BACKUP_FOLDER = "\\Users\\Harry\\DissertationPracticalWork\\test\\backup_files"
 
 def log_event(message):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

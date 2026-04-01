@@ -1,0 +1,31 @@
+Timestamp,Module,Message
+2026-04-02 00:01:09,patch_management_log.txt,[2026-04-01 23:07:54] --- Patch Managment Module Started! ---
+2026-04-02 00:01:09,patch_management_log.txt,[2026-04-01 23:08:02] Checked for updates successfully.
+2026-04-02 00:01:09,patch_management_log.txt,[2026-04-01 23:08:02]
+2026-04-02 00:01:09,patch_management_log.txt,[2026-04-01 23:08:02] Simulating installation of updates
+2026-04-02 00:01:09,patch_management_log.txt,[2026-04-01 23:08:05] All updates applied succesfully (simulated).
+2026-04-02 00:01:09,patch_management_log.txt,[2026-04-01 23:08:05] --- Patch Management Module Finished ---
+2026-04-02 00:01:09,asset_tracking_log.txt,[2026-04-01 23:34:59] ---Asset Tracking Module Started ---
+2026-04-02 00:01:09,asset_tracking_log.txt,[2026-04-01 23:35:05] Asset recorded: test | 10.0.2.15
+2026-04-02 00:01:09,asset_tracking_log.txt,[2026-04-01 23:35:05] ---Asset Tracking Module Finished---
+2026-04-02 00:01:09,malware_monitor_log.txt,[2026-04-01 23-44-33 ---Malware Monotring Started!---]
+2026-04-02 00:01:09,malware_monitor_log.txt,[2026-04-01 23-45-07 ---Malware Monotoring Stopped---
+2026-04-02 00:01:09,malware_monitor_log.txt,]
+2026-04-02 00:01:09,malware_monitor_log.txt,[2026-04-01 23-46-11 ---Malware Monotoring Started!---]
+2026-04-02 00:01:09,malware_monitor_log.txt,[2026-04-01 23-46-11 Created monitoring folder: \monitor_folder]
+2026-04-02 00:01:09,malware_monitor_log.txt,[2026-04-01 23-46-33 ---Malware Monotoring Stopped---
+2026-04-02 00:01:09,malware_monitor_log.txt,]
+2026-04-02 00:01:09,malware_monitor_log.txt,[2026-04-01 23-49-25 ---Malware Monotoring Started!---]
+2026-04-02 00:01:09,malware_monitor_log.txt,[2026-04-01 23-50-00 ALERT: Suspicious file detected -> malware.exe]
+2026-04-02 00:01:09,malware_monitor_log.txt,[2026-04-01 23-50-20 New File detected -> test.txt]
+2026-04-02 00:01:09,malware_monitor_log.txt,[2026-04-01 23-50-26 ---Malware Monotoring Stopped---
+2026-04-02 00:01:09,malware_monitor_log.txt,]
+2026-04-02 00:01:09,backup_log.txt,[2026-04-01 23:54:37] === Backup Automation Module Started ===
+2026-04-02 00:01:09,backup_log.txt,[2026-04-01 23:54:37] Backup completed successfully to \Users\Harry\DissertationPracticalWork\test\backup_files\backup_20260401_235437
+2026-04-02 00:01:09,backup_log.txt,[2026-04-01 23:54:37] === Backup Automation Module Finished ===
+2026-04-02 00:01:09,access_control_log.txt,[2026-04-01 23:59:27] === Access Control Module Started ===
+2026-04-02 00:01:09,access_control_log.txt,[2026-04-01 23:59:27] Password for alice FAILED policy. Action required.
+2026-04-02 00:01:09,access_control_log.txt,[2026-04-01 23:59:27] Password for harry meets policy.
+2026-04-02 00:01:09,access_control_log.txt,[2026-04-01 23:59:27] Password for bob meets policy.
+2026-04-02 00:01:09,access_control_log.txt,[2026-04-01 23:59:27] Password for charlie FAILED policy. Action required.
+2026-04-02 00:01:09,access_control_log.txt,[2026-04-01 23:59:27] === Access Control Module Finished ===
