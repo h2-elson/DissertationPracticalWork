@@ -6,67 +6,53 @@ const currentUrl = window.location.href;
 chrome.runtime.sendMessage(
   {
     type: "CHECK_URL",
-    url: currentUrl
+    url: window.location.href
   },
   (response) => {
     if (response && response.suspicious) {
-      showWarningBanner();
+      showWarningBanner(response.details);
     }
   }
 );
 
-function showWarningBanner() {
-  // Prevent duplicate banners
-  if (document.getElementById("phishing-warning-banner")) {
-    return;
-  }
+function showWarningBanner(details) {
+  if (document.getElementById("phishing-warning-banner")) return;
 
-  // Create banner container
+  const currentUrl = window.location.href;
+
   const banner = document.createElement("div");
   banner.id = "phishing-warning-banner";
 
-  // Banner content
   banner.innerHTML = `
     <strong>Security Warning:</strong>
-    This website uses an IP-based URL, which is a common phishing indicator.
+    Suspicious indicators detected:
+    <ul>
+      ${details.ipBased ? "<li>IP-based URL</li>" : ""}
+      ${details.shortUrl ? "<li>Shortened URL</li>" : ""}
+      ${details.suspiciousDomain ? "<li>Known suspicious domain</li>" : ""}
+    </ul>
     <button id="dismiss-warning">Dismiss</button>
   `;
 
-  // Banner styling
-  banner.style.position = "fixed";
-  banner.style.top = "0";
-  banner.style.left = "0";
-  banner.style.width = "100%";
-  banner.style.backgroundColor = "#b71c1c";
-  banner.style.color = "white";
-  banner.style.padding = "12px";
-  banner.style.fontFamily = "Arial, sans-serif";
-  banner.style.fontSize = "14px";
-  banner.style.zIndex = "9999";
-  banner.style.display = "flex";
-  banner.style.justifyContent = "space-between";
-  banner.style.alignItems = "center";
-
-  // Button styling
-  const buttonStyle = `
-    background: white;
-    color: #b71c1c;
-    border: none;
-    padding: 6px 10px;
-    cursor: pointer;
-    font-weight: bold;
+  banner.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%;
+    background-color: #b71c1c; color: white; padding: 12px;
+    font-family: Arial, sans-serif; font-size: 14px;
+    z-index: 9999; display: flex; justify-content: space-between;
+    align-items: center;
   `;
 
-  banner.querySelector("button").style.cssText = buttonStyle;
-
-  // Dismiss button logic
   banner.querySelector("#dismiss-warning").addEventListener("click", () => {
+    // Log user decision
+    chrome.runtime.sendMessage({
+      type: "LOG_USER_ACTION",
+      url: currentUrl,
+      action: "DISMISSED_WARNING"
+    });
+
     banner.remove();
   });
 
-  // Push page content down so it’s not hidden
   document.body.style.marginTop = "50px";
-
-  // Add banner to page
   document.body.prepend(banner);
 }

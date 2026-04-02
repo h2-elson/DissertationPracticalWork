@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Anti-Phishing Demo Extension",
-  "version": "1.0",
-  "description": "Detects basic phishing indicators such as IP-based URLs.",
-  "permissions": ["tabs"],
+  "name": "Anti-Phishing Extension (Enhanced)",
+  "version": "1.1",
+  "description": "Detects phishing via IPs, suspicious domains, and short links",
+  "permissions": ["tabs", "storage"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
