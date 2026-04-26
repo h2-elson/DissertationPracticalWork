@@ -1,20 +1,22 @@
-#imports
+# imports
 import datetime
 import csv
 import os
+import sys
 
 LOG_FILE = "access_control_log.txt"
-USER_FILE = "\\Users\\Harry\\DissertationPracticalWork\\test\\users.csv"
 
 # Password policy settings
 MIN_PASSWORD_LENGTH = 8
 REQUIRE_NUMERIC = True
+
 
 def log_event(message):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open(LOG_FILE, "a") as f:
         f.write(f"[{timestamp}] {message}\n")
     print(f"[{timestamp}] {message}")
+
 
 def evaluate_password_strength(password):
     if len(password) < MIN_PASSWORD_LENGTH:
@@ -23,34 +25,38 @@ def evaluate_password_strength(password):
         return False
     return True
 
-def enforce_access_controls():
-    if not os.path.exists(USER_FILE):
-        log_event(f"User file {USER_FILE} not found. Creating sample file.")
-        with open(USER_FILE, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["username", "last_login", "password"])
-            writer.writerow(["alice", "2026-03-25", "pass123"])  # weak
-            writer.writerow(["bob", "2026-03-28", "StrongPass1"])  # strong
 
-    updated_users = []
-    with open(USER_FILE, "r") as f:
+def enforce_access_controls(user_file):
+    if not os.path.exists(user_file):
+        log_event(f"User file {user_file} not found.")
+        return
+
+    log_event(f"Checking users from: {user_file}\n")
+
+    with open(user_file, "r") as f:
         reader = csv.DictReader(f)
+
         for row in reader:
             username = row["username"]
             password = row["password"]
-            strong = evaluate_password_strength(password)
-            if strong:
-                log_event(f"Password for {username} meets policy.")
-            else:
-                log_event(f"Password for {username} FAILED policy. Action required.")
-            updated_users.append(row)
-    # Optionally: could disable users who fail policies here
-    return updated_users
 
-def main():
+            strong = evaluate_password_strength(password)
+
+            if strong:
+                log_event(f"Password for '{username}' meets policy.")
+            else:
+                log_event(f"Password for '{username}' FAILED policy. Action required.")
+
+
+def main(user_file):
     log_event("=== Access Control Module Started ===")
-    enforce_access_controls()
+    enforce_access_controls(user_file)
     log_event("=== Access Control Module Finished ===\n")
 
+
+# Allows file path to be passed from the dashboard GUI
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1:
+        main(sys.argv[1])
+    else:
+        print("No user CSV file provided.")

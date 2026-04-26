@@ -1,0 +1,142 @@
+import tkinter as tk
+from tkinter import scrolledtext, filedialog
+import subprocess
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+#Default run scripts
+def run_script(script_name, args=None):
+    output_box.delete(1.0, tk.END)
+
+    command = ["python", os.path.join(BASE_DIR, script_name)]
+    if args:
+        command.extend(args)
+
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+
+    stdout, stderr = process.communicate()
+    output_box.insert(tk.END, stdout)
+    if stderr:
+        output_box.insert(tk.END, "\nERROR:\n" + stderr)
+
+
+#Run asset registry (create csv and output)
+def show_asset_registry():
+    run_script("asset_tracking.py")
+    csv_path = os.path.join(BASE_DIR, "asset_registry.csv")
+
+    if os.path.exists(csv_path):
+        output_box.insert(tk.END, "\n\n=== Asset Registry ===\n\n")
+        with open(csv_path) as f:
+            for line in f:
+                output_box.insert(tk.END, line)
+
+
+#Access control (open csv)
+def run_access_control():
+    file_path = filedialog.askopenfilename(
+        title="Select users CSV file",
+        filetypes=[("CSV files", "*.csv")]
+    )
+    if file_path:
+        run_script("access_control.py", [file_path])
+
+#Run malware monitoring (open folder to monitor)
+def run_malware_monitor():
+    folder = filedialog.askdirectory(title="Select folder to monitor")
+    if folder:
+        run_script("malware_monitoring.py", [folder])
+
+#create incident log, (output log)
+def show_incident_log():
+    run_script("incident_logging.py")
+    csv_path = os.path.join(BASE_DIR, "central_incident_log.csv")
+
+    if os.path.exists(csv_path):
+        output_box.insert(tk.END, "\n\n=== Central Incident Log ===\n\n")
+        with open(csv_path) as f:
+            for line in f:
+                output_box.insert(tk.END, line)
+
+#Backup automation (select folder, select backup destination)
+def run_backup():
+    source = filedialog.askdirectory(title="Select source folder")
+    if not source:
+        return
+    dest = filedialog.askdirectory(title="Select backup destination")
+    if not dest:
+        return
+    run_script("backup_automation.py", [source, dest])
+
+
+#Patch management 
+def run_patch_management():
+    run_script("patch_management.py")
+
+window = tk.Tk()
+window.title("SME Cybersecurity Dashboard")
+window.geometry("850x600")
+window.configure(bg="#f4f6f8")
+
+title = tk.Label(
+    window,
+    text="SME Cybersecurity Dashboard",
+    font=("Segoe UI", 22, "bold"),
+    bg="#f4f6f8",
+    fg="#2c3e50"
+)
+title.pack(pady=15)
+
+subtitle = tk.Label(
+    window,
+    text="Practical Security Controls for Small & Medium Enterprises",
+    font=("Segoe UI", 11),
+    bg="#f4f6f8",
+    fg="#555"
+)
+subtitle.pack(pady=5)
+
+
+#Buttons
+
+button_frame = tk.Frame(window, bg="#f4f6f8")
+button_frame.pack(pady=15)
+
+button_style = {
+    "font": ("Segoe UI", 11),
+    "width": 30,
+    "height": 2,
+    "bg": "#3498db",
+    "fg": "white",
+    "bd": 0,
+    "activebackground": "#2980b9"
+}
+
+tk.Button(button_frame, text="Asset Tracking", command=show_asset_registry, **button_style).grid(row=0, column=0, padx=10, pady=8)
+tk.Button(button_frame, text="Access Control Audit", command=run_access_control, **button_style).grid(row=1, column=0, padx=10, pady=8)
+tk.Button(button_frame, text="Malware Monitoring", command=run_malware_monitor, **button_style).grid(row=2, column=0, padx=10, pady=8)
+tk.Button(button_frame, text="Incident Logging Report", command=show_incident_log, **button_style).grid(row=3, column=0, padx=10, pady=8)
+tk.Button(button_frame, text="Backup Automation", command=run_backup, **button_style).grid(row=4, column=0, padx=10, pady=8)
+tk.Button(button_frame, text="Patch Management", command=run_patch_management, **button_style).grid(row=5, column=0, padx=10, pady=8)
+
+
+#Output
+
+output_box = scrolledtext.ScrolledText(
+    window,
+    width=150,
+    height=30,
+    font=("Consolas", 10),
+    bg="#ffffff",
+    fg="#2c3e50",
+    borderwidth=1
+)
+output_box.pack(pady=20, padx=20)
+
+window.mainloop()

@@ -38,20 +38,36 @@ def get_installed_software():
         log_event(f"Error retriveing software list: {e}")
         return "Error retrieving software"
 
-def write_to_csv(hostname,ip,os_info,software):
-    file_exists = False
+def write_to_csv(hostname, ip, os_info, software):
+    rows = []
+    updated = False
+
+    # Read existing records if file exists
     try:
-        with open(ASSET_FILE, "r"):
-            file_exists = True
+        with open(ASSET_FILE, "r", newline='', encoding='utf-8') as csvfile:
+            reader = csv.reader(csvfile)
+            rows = list(reader)
     except FileNotFoundError:
-        pass
+        rows = [["Hostname", "IP Address", "OS", "Installed Software"]]
 
-    with open(ASSET_FILE, "a", newline='', encoding='utf-8') as csvfile:
+    # Check if hostname already exists and update it
+    for i in range(1, len(rows)):
+        if rows[i][0] == hostname:
+            rows[i] = [hostname, ip, os_info, software]
+            updated = True
+            log_event(f"Updated existing asset entry for {hostname}")
+            break
+
+    # If not found, append new device
+    if not updated:
+        rows.append([hostname, ip, os_info, software])
+        log_event(f"Added new asset entry for {hostname}")
+
+    # Write everything back to CSV
+    with open(ASSET_FILE, "w", newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
-        if not file_exists:
-            writer.writerow(["Hostname", "IP Address", "OS", "Installed Software"])
-        writer.writerow([hostname, ip, os_info, software])
-
+        writer.writerows(rows)
+        
 def main():
     log_event("---Asset Tracking Module Started ---")
     hostname, ip , os_info = get_system_info()
