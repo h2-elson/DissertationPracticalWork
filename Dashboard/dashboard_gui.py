@@ -50,9 +50,24 @@ def run_access_control():
 
 #Run malware monitoring (open folder to monitor)
 def run_malware_monitor():
-    folder = filedialog.askdirectory(title="Select folder to monitor")
-    if folder:
-        run_script("malware_monitoring.py", [folder])
+    folder = filedialog.askdirectory(title="Select Folder to Scan")
+
+    if not folder:
+        return
+
+    script_path = os.path.abspath("malware_monitoring.py")
+
+    result = subprocess.run(
+        ["python", script_path, folder],
+        capture_output=True,
+        text=True
+    )
+
+    output_box.delete(1.0, tk.END)
+    output_box.insert(tk.END, result.stdout)
+    output_box.insert(tk.END, result.stderr)
+
+    output_box.insert(tk.END, "\n✔ Malware scan completed\n")
 
 #create incident log, (output log)
 def show_incident_log():
@@ -120,7 +135,17 @@ def run_backup_automation():
 
 #Patch management 
 def run_patch_management():
-    run_script("patch_management.py")
+    command = (
+        "powershell -Command "
+        "\"Start-Process powershell -Verb RunAs -ArgumentList "
+        "'-ExecutionPolicy Bypass -Command Install-WindowsUpdate -AcceptAll -IgnoreReboot'\""
+    )
+
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+
+    output_box.delete(1.0, tk.END)
+    output_box.insert(tk.END, result.stdout)
+    output_box.insert(tk.END, result.stderr)
 
 window = tk.Tk()
 window.title("SME Cybersecurity Dashboard")
