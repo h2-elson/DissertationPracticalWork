@@ -1,3 +1,4 @@
+import sys
 import tkinter as tk
 from tkinter import scrolledtext, filedialog
 import subprocess
@@ -64,16 +65,58 @@ def show_incident_log():
             for line in f:
                 output_box.insert(tk.END, line)
 
+def create_backup_bat(source, destination):
+    script_path = os.path.abspath("backup_automation.py")
+    bat_path = os.path.join(BASE_DIR, "run_backup_task.bat")
+
+    python_exe = sys.executable
+
+    with open(bat_path, "w") as f:
+        f.write(f'"{python_exe}" "{script_path}" "{source}" "{destination}"\n')
+
+    return bat_path
+
 #Backup automation (select folder, select backup destination)
-def run_backup():
-    source = filedialog.askdirectory(title="Select source folder")
+def run_backup_automation():
+    source = filedialog.askdirectory(title="Select Source Folder")
     if not source:
         return
-    dest = filedialog.askdirectory(title="Select backup destination")
-    if not dest:
-        return
-    run_script("backup_automation.py", [source, dest])
 
+    destination = filedialog.askdirectory(title="Select Destination Folder")
+    if not destination:
+        return
+
+    script_path = os.path.abspath("backup_automation.py")
+
+    python_exe = sys.executable
+
+    task_name = "SME_Backup_Automation"
+
+    command = [
+    "schtasks",
+    "/create",
+    "/sc", "daily",
+    "/tn", task_name,
+    "/tr", f'cmd /c cd /d "{BASE_DIR}" && "{sys.executable}" backup_automation.py "{source}" "{destination}"',
+    "/st", "02:00",
+    "/f"
+    ]
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    run_command = ["schtasks", "/run", "/tn", task_name]
+    run_result = subprocess.run(run_command, capture_output=True, text=True)
+
+    output_box.delete(1.0, tk.END)
+    output_box.insert(tk.END, "STDOUT:\n" + result.stdout + "\n\n")
+    output_box.insert(tk.END, "STDERR:\n" + result.stderr + "\n\n")
+
+    output_box.insert(tk.END, "=== Immediate Execution ===\n")
+    output_box.insert(tk.END, run_result.stdout + "\n" + run_result.stderr + "\n")
+
+    if result.returncode == 0:
+        output_box.insert(tk.END, "✔ Task created successfully\n")
+    else:
+        output_box.insert(tk.END, "❌ Task creation failed\n")
 
 #Patch management 
 def run_patch_management():
@@ -122,7 +165,7 @@ tk.Button(button_frame, text="Asset Tracking", command=show_asset_registry, **bu
 tk.Button(button_frame, text="Access Control Audit", command=run_access_control, **button_style).grid(row=1, column=0, padx=10, pady=8)
 tk.Button(button_frame, text="Malware Monitoring", command=run_malware_monitor, **button_style).grid(row=2, column=0, padx=10, pady=8)
 tk.Button(button_frame, text="Incident Logging Report", command=show_incident_log, **button_style).grid(row=3, column=0, padx=10, pady=8)
-tk.Button(button_frame, text="Backup Automation", command=run_backup, **button_style).grid(row=4, column=0, padx=10, pady=8)
+tk.Button(button_frame, text="Backup Automation", command=run_backup_automation, **button_style).grid(row=4, column=0, padx=10, pady=8)
 tk.Button(button_frame, text="Patch Management", command=run_patch_management, **button_style).grid(row=5, column=0, padx=10, pady=8)
 
 

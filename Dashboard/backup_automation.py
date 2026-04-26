@@ -13,7 +13,6 @@ def log_event(message):
         f.write(f"[{timestamp}] {message}\n")
     print(f"[{timestamp}] {message}")
 
-
 def backup_files(source_folder, backup_folder):
     if not os.path.exists(source_folder):
         log_event(f"Source folder does not exist: {source_folder}")
@@ -34,14 +33,14 @@ def backup_files(source_folder, backup_folder):
 
 
 def main(source_folder, backup_folder):
-    log_event("=== Backup Automation Module Started ===")
+    log_event("=== Automated Backup Started ===")
     backup_files(source_folder, backup_folder)
-    log_event("=== Backup Automation Module Finished ===\n")
+    log_event("=== Automated Backup Finished ===\n")
 
-
-# Accept paths from dashboard
 if __name__ == "__main__":
-    if len(sys.argv) > 2:
-        main(sys.argv[1], sys.argv[2])
-    else:
-        print("Source and backup folders not provided.")
+    try:
+        source = sys.argv[1]
+        destination = sys.argv[2]
+        main(source, destination)
+    except IndexError:
+        log_event("ERROR: Source and backup folders were not passed to the script.")
