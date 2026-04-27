@@ -54,7 +54,6 @@ def run_malware_monitor():
 
     if not folder:
         return
-
     script_path = os.path.abspath("malware_monitoring.py")
 
     result = subprocess.run(
@@ -81,12 +80,12 @@ def show_incident_log():
                 output_box.insert(tk.END, line)
 
 def create_backup_bat(source, destination):
-    script_path = os.path.abspath("backup_automation.py")
     bat_path = os.path.join(BASE_DIR, "run_backup_task.bat")
-
+    script_path = os.path.join(BASE_DIR, "backup_automation.py")
     python_exe = sys.executable
 
     with open(bat_path, "w") as f:
+        f.write(f'cd /d "{BASE_DIR}"\n')
         f.write(f'"{python_exe}" "{script_path}" "{source}" "{destination}"\n')
 
     return bat_path
@@ -105,28 +104,28 @@ def run_backup_automation():
 
     python_exe = sys.executable
 
-    task_name = "SME_Backup_Automation"
+    task_name = "SME_Backup_Automationss"
+
+    bat_path = create_backup_bat(source, destination)
 
     command = [
-    "schtasks",
-    "/create",
-    "/sc", "daily",
-    "/tn", task_name,
-    "/tr", f'cmd /c cd /d "{BASE_DIR}" && "{sys.executable}" backup_automation.py "{source}" "{destination}"',
-    "/st", "02:00",
-    "/f"
+        "schtasks",
+        "/create",
+        "/sc", "daily",
+        "/tn", task_name,
+        "/tr", f'"{bat_path}"',
+        "/st", "02:00",
+        "/f"
     ]
-    result = subprocess.run(command, capture_output=True, text=True)
 
-    run_command = ["schtasks", "/run", "/tn", task_name]
-    run_result = subprocess.run(run_command, capture_output=True, text=True)
+    result = subprocess.run([bat_path])
 
+    subprocess.run(["schtasks", "/run", "/tn", task_name])
     output_box.delete(1.0, tk.END)
     output_box.insert(tk.END, "STDOUT:\n" + result.stdout + "\n\n")
     output_box.insert(tk.END, "STDERR:\n" + result.stderr + "\n\n")
 
     output_box.insert(tk.END, "=== Immediate Execution ===\n")
-    output_box.insert(tk.END, run_result.stdout + "\n" + run_result.stderr + "\n")
 
     if result.returncode == 0:
         output_box.insert(tk.END, "✔ Task created successfully\n")
